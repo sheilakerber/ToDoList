@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
+
+    <style>
+        .flex-container {
+        display: flex;
+        }
+
+        .flex-child {
+
+            flex: 0 0 auto ;
+            width: 92%;
+        }
+
+        .flex-child:first-child {
+            margin-right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<div style="margin-top: 40px" class="ui container" >
+
+        <h1 class="ui center aligned header" >Todo App</h1>
+
+        <form class="ui form" action="/add" method="post">
+            <div class="field flex-container">
+                <div class="flex-child left" >
+                    <input type="text" name="title" placeholder="Enter ToDo...">
+                </div>
+                <div class="flex-child right" >
+                    <button class="ui positive basic button" type="submit">Add</button>
+                </div>
+            </div>
+        </form>
+
+    <!-- Jinja template -->
+    {% for todo in todo_list %}
+        <div class="ui segment">
+            <ul>
+                <li>
+                    <p class="ui big header" > {{ todo.title }}
+                        {% if todo.complete == False %}
+                            <span class="ui gray label" >Not Completed</span>
+                        {% else %}
+                            <span class="ui green label" >Completed</span>
+                        {% endif %}
+
+                        <a class="ui  basic button" href="/update/{{ todo.id }}">Update</a>
+                        <a class="ui negative basic button" href="/delete/{{ todo.id }}">Delete</a>
+                    </p>
+                </li>
+            </ul>
+        </div>
+    {% endfor %}
+
+    {% if todo_list %}
+        <form action="/clear_all" method="post">
+            <button style="background-color: #FFA500; color: black;" class="fluid ui button" name="clearBtn" type="submit">Clear all items</button>
+        </form>
+    {% else %}
+        <br/>
+        <h2 style="background-color: #90EE90; color: black;" class="fluid ui button">There are currently no ToDos in your list!</h2>
+    {% endif %}
+    </div>
+</body>
+</html>
+
