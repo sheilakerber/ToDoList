@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
@@ -10,8 +10,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.getenv("SECRET_KEY")
 db = SQLAlchemy(app)
 
-print(f"app.secret_key = {app.secret_key}")
-
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
@@ -20,12 +18,16 @@ class Todo(db.Model):
 @app.route('/')
 def index():
     todo_list = Todo.query.all()
-    qtd_todos = len(todo_list)
-    print(f'TODO LIST SIZE: {qtd_todos}')
-    if len(todo_list) > 0:
-        return render_template('base.html', todo_list=todo_list)
+
+    if session['username']:
+        username = session['username']
     else:
-        return render_template('base.html', todo_list=todo_list)
+        username = ''
+
+    if len(todo_list) > 0:
+        return render_template('base.html', todo_list=todo_list, username=username)
+    else:
+        return render_template('base.html', todo_list=todo_list, username=username)
 
 @app.route('/clear_all', methods=['POST'])
 def clear_all():
@@ -38,6 +40,31 @@ def clear_all():
         db.session.rollback()
         print(f'TODOS NOT DELETED! \n Error: {e}')
         return redirect(url_for('index'))
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        session['username'] = username
+        session['password'] = password
+        if username == 'Maria' and password == '123':
+            return redirect(url_for('todos'))
+        else:
+            return render_template('login.html') + f"<h2 style='text-align: center; color: black;'>Wrong username or password. <br/> Please, check your data!</h2>"
+    else:
+        return render_template('login.html')
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
+@app.route('/todos')
+def todos():
+    if 'username' in session:
+        username = session['username']
+        return redirect(url_for('index', username=username))
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/add', methods=['POST'])
 def add():

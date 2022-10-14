@@ -22,12 +22,23 @@
             margin-right: 20px;
         }
     </style>
-</head>
-
 <body>
 <div style="margin-top: 40px" class="ui container" >
-
-        <h1 class="ui center aligned header" >Todo App</h1>
+        {% if username %}
+            <div class="field flex-container">
+                <div class="flex-child left" >
+                    <h2 style="text-align: center; color: black; ">Welcome, {{ username }} ! Here is your ToDo List! </h2>
+                </div>
+                <div class="flex-child right" >
+                    <form action="/logout" method="post">
+                        <button class="ui basic negative button" type="submit">Logout</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+    <br/>
+        <hr>
+        <h3 class="ui center aligned header" >Add new ToDos...</h3>
 
         <form class="ui form" action="/add" method="post">
             <div class="field flex-container">
@@ -49,7 +60,7 @@
                         {% if todo.complete == False %}
                             <span class="ui gray label" >Not Completed</span>
                         {% else %}
-                            <span class="ui green label" >Completed</span>
+                            <span style="background-color:  #b5e7a0" class="ui label" >Completed</span>
                         {% endif %}
 
                         <a class="ui  basic button" href="/update/{{ todo.id }}">Update</a>
@@ -62,7 +73,7 @@
 
     {% if todo_list %}
         <form action="/clear_all" method="post">
-            <button style="background-color: #FFA500; color: black;" class="fluid ui button" name="clearBtn" type="submit">Clear all items</button>
+            <button style="background-color: #ffcc5c; color: black;" class="fluid ui button" name="clearBtn" type="submit">Clear all items</button>
         </form>
     {% else %}
         <br/>
