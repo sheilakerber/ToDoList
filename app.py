@@ -17,29 +17,28 @@ class Todo(db.Model):
 
 @app.route('/')
 def index():
+    return render_template('login.html')
+
+@app.route('/todos_list')
+def todos_list():
     todo_list = Todo.query.all()
 
     if session['username']:
         username = session['username']
     else:
         username = ''
-
-    if len(todo_list) > 0:
-        return render_template('base.html', todo_list=todo_list, username=username)
-    else:
-        return render_template('base.html', todo_list=todo_list, username=username)
+    return render_template('base.html', todo_list=todo_list, username=username)
 
 @app.route('/clear_all', methods=['POST'])
 def clear_all():
     try:
         db.session.query(Todo).delete()
         db.session.commit()
-        print('Items deleted!')
-        return redirect(url_for('index'))
+        return redirect(url_for('todos_list'))
     except Exception as e:
         db.session.rollback()
         print(f'TODOS NOT DELETED! \n Error: {e}')
-        return redirect(url_for('index'))
+        return redirect(url_for('todos_list'))
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
@@ -50,7 +49,7 @@ def login():
         if username == 'Maria' and password == '123':
             return redirect(url_for('todos'))
         else:
-            return render_template('login.html') + f"<h2 style='text-align: center; color: black;'>Wrong username or password. <br/> Please, check your data!</h2>"
+            return render_template('login.html') + f"<h2 style='text-align: center; color: red;'>Wrong username or password.  Please, check your data!</h2>"
     else:
         return render_template('login.html')
 @app.route('/logout', methods=['POST'])
@@ -62,7 +61,7 @@ def logout():
 def todos():
     if 'username' in session:
         username = session['username']
-        return redirect(url_for('index', username=username))
+        return redirect(url_for('todos_list', username=username))
     else:
         return redirect(url_for('login'))
 
@@ -72,28 +71,27 @@ def add():
     new_todo = Todo(title=title, complete=False)
     db.session.add(new_todo)
     db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('todos_list'))
 
 @app.route('/update/<int:todo_id>')
 def update(todo_id):
     todo = Todo.query.filter_by(id=todo_id).first()
     todo.complete = not todo.complete
     db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('todos_list'))
 
 @app.route('/delete/<int:todo_id>')
 def delete(todo_id):
     todo = Todo.query.filter_by(id=todo_id).first()
     db.session.delete(todo)
     db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('todos_list'))
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
 
     app.run(debug=True)
-
 
 ## https://www.youtube.com/watch?v=1nxzOrLWiic&list=TLPQMTAxMDIwMjKLYp3YZnvhxg&index=8
 """

@@ -27,7 +27,7 @@
         {% if username %}
             <div class="field flex-container">
                 <div class="flex-child left" >
-                    <h2 style="text-align: center; color: black; ">Welcome, {{ username }} ! Here is your ToDo List! </h2>
+                    <h2 style="text-align: center; color: black; ">Welcome, {{ username }}! Here is your ToDo List! </h2>
                 </div>
                 <div class="flex-child right" >
                     <form action="/logout" method="post">
@@ -35,23 +35,21 @@
                     </form>
                 </div>
             </div>
+            <br/><hr>
         {% endif %}
-    <br/>
-        <hr>
         <h3 class="ui center aligned header" >Add new ToDos...</h3>
 
         <form class="ui form" action="/add" method="post">
             <div class="field flex-container">
-                <div class="flex-child left" >
+                <div class="flex-child left">
                     <input type="text" name="title" placeholder="Enter ToDo...">
                 </div>
-                <div class="flex-child right" >
+                <div class="flex-child right">
                     <button class="ui positive basic button" type="submit">Add</button>
                 </div>
             </div>
         </form>
 
-    <!-- Jinja template -->
     {% for todo in todo_list %}
         <div class="ui segment">
             <ul>
@@ -62,7 +60,6 @@
                         {% else %}
                             <span style="background-color:  #b5e7a0" class="ui label" >Completed</span>
                         {% endif %}
-
                         <a class="ui  basic button" href="/update/{{ todo.id }}">Update</a>
                         <a class="ui negative basic button" href="/delete/{{ todo.id }}">Delete</a>
                     </p>
@@ -82,4 +79,3 @@
     </div>
 </body>
 </html>
-
